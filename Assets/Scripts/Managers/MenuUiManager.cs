@@ -7,15 +7,22 @@ public class MenuUiManager : MonoBehaviour
     private const string QUIZ_BUTTON_NAME = "quizBtn";
     private const string WIKI_BUTTON_NAME = "wikiBtn";
     private const string ABOUT_BUTTON_NAME = "aboutBtn";
+    private const string API_PANEL_NAME = "apiPanel";
+    private const string API_BUTTON_NAME = "apiBtn";
+    private const string API_CONFIRM_BUTTON_NAME = "apiConfirmBtn";
+    private const string API_KEY_INPUT_NAME = "apiKeyInput";
 
     [Header("Menu UI Settings")]
     [SerializeField] private UIDocument _menuUiDocument;
-    [Space(10)]
-    [Header("Menu UI Elements")]
-    [SerializeField] private Button _exchangeRateButton;
-    [SerializeField] private Button _quizButton;
-    [SerializeField] private Button _wikiButton;
-    [SerializeField] private Button _aboutButton;
+
+    private VisualElement _apiPanel;
+
+    private Button _exchangeRateButton;
+    private Button _quizButton;
+    private Button _wikiButton;
+    private Button _aboutButton;
+    private Button _apiButton;
+    private Button _apiConfirmButton;
     //=================================================================//
     private void Awake() {
         Init();
@@ -45,6 +52,9 @@ public class MenuUiManager : MonoBehaviour
         _quizButton = root.Q<Button>(QUIZ_BUTTON_NAME);
         _wikiButton = root.Q<Button>(WIKI_BUTTON_NAME);
         _aboutButton = root.Q<Button>(ABOUT_BUTTON_NAME);
+        _apiButton = root.Q<Button>(API_BUTTON_NAME);
+        _apiConfirmButton = root.Q<Button>(API_CONFIRM_BUTTON_NAME);
+        _apiPanel = root.Q<VisualElement>(API_PANEL_NAME);
 
         if (_exchangeRateButton == null || _quizButton == null || _wikiButton == null || _aboutButton == null) {
             Debug.LogError("One or more menu buttons are not found in the UI Document.");
@@ -55,17 +65,30 @@ public class MenuUiManager : MonoBehaviour
         _quizButton.clicked += OnQuizButtonClicked;
         _wikiButton.clicked += OnWikiButtonClicked;
         _aboutButton.clicked += OnAboutButtonClicked;
+        _apiButton.clicked += OnApiButtonClicked;
+        _apiConfirmButton.clicked += OnApiConfirmButtonClicked;
+    }
+    private void OnApiConfirmButtonClicked() {
+        ActivateApiPanel(false);
+        // Here you can add logic to handle the API confirmation, such as saving settings or making an API call.
+        AppManager.Instance.SetApiKey(_apiPanel.Q<TextField>(API_KEY_INPUT_NAME).value);
+    }
+    private void OnApiButtonClicked() {
+        ActivateApiPanel(true);
     }
     private void OnAboutButtonClicked() {
-        print("About button clicked!");
     }
     private void OnWikiButtonClicked() {
-        print("Wiki button clicked!");
     }
     private void OnQuizButtonClicked() {
-        print("Quiz button clicked!");
     }
     private void OnExchangeRateButtonClicked() {
-        print("Exchange Rate button clicked!");
+    }
+    private void ActivateApiPanel(bool activate) {
+        if (_apiPanel != null) {
+            _apiPanel.style.display = activate ? DisplayStyle.Flex : DisplayStyle.None;
+        } else {
+            Debug.LogError("API Panel is not found in the UI Document.");
+        }
     }
 }
