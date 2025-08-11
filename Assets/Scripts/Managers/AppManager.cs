@@ -2,25 +2,33 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using System;
 using System.IO;
 using Newtonsoft.Json;
+using System;
+using UnityEngine.UIElements;
 public class AppManager : MonoBehaviour
 {
     private const string API_KEY_PREF_KEY = "ApiKey";
     public static AppManager Instance { get; private set; }
+
+    public static event Action OnCurrencyCollectionUpdated;
     public string ApiKey { get; private set; } = string.Empty;
     public Dictionary<string, float> CurrencyCollection { get; private set; } = new();
+    public UIDocument UIDocument;
     private string _currencyCollectionSavePath => Path.Combine(Application.persistentDataPath, "currency_collection.json");
     [SerializeField] private string _apiUrl = "https://v6.api.exchangerate-api.com/v6/";
+    //===================================================================//
     private void Awake() {
         if (Instance == null) {
-            Instance = this;
-            Init();
+            Instance = this;    
         } else {
             Destroy(gameObject);
         }
     }
+    private void Start() {
+        Init();
+    }
+    //===================================================================//
     public void SetApiKey(string apiKey) {
         ApiKey = apiKey;
         PlayerPrefs.SetString(API_KEY_PREF_KEY, ApiKey);
@@ -34,7 +42,9 @@ public class AppManager : MonoBehaviour
     private void CheckAndPopulateCurrencyCollection() {
         // Check if the currency collection file exists
         if (File.Exists(_currencyCollectionSavePath)) {
-            CurrencyCollection = JsonUtility.FromJson<CurrencyData>(File.ReadAllText(_currencyCollectionSavePath)).conversion_rates;
+            CurrencyCollection = JsonConvert.DeserializeObject<CurrencyData>(File.ReadAllText(_currencyCollectionSavePath)).conversion_rates;
+            OnCurrencyCollectionUpdated?.Invoke();
+            print("Currency collection loaded from file.");
         } else {
             if(PlayerPrefs.HasKey(API_KEY_PREF_KEY)) {
                 ApiKey = PlayerPrefs.GetString(API_KEY_PREF_KEY);
@@ -56,6 +66,7 @@ public class AppManager : MonoBehaviour
             string json = JsonConvert.SerializeObject(currencyData, Formatting.Indented);
             File.WriteAllText(_currencyCollectionSavePath, json);
             Debug.Log("Currency collection populated successfully.");
+            OnCurrencyCollectionUpdated?.Invoke();
         } else {
             Debug.LogError("Failed to populate currency collection.");
         }

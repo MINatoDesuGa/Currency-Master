@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 public class MenuUiManager : MonoBehaviour
 {
+    public static event Action OnExchangeRateButtonClickedEvent;
+
     private const string EXCHANGE_RATE_BUTTON_NAME = "exchangeRateBtn";
     private const string QUIZ_BUTTON_NAME = "quizBtn";
     private const string WIKI_BUTTON_NAME = "wikiBtn";
@@ -12,8 +14,7 @@ public class MenuUiManager : MonoBehaviour
     private const string API_CONFIRM_BUTTON_NAME = "apiConfirmBtn";
     private const string API_KEY_INPUT_NAME = "apiKeyInput";
 
-    [Header("Menu UI Settings")]
-    [SerializeField] private UIDocument _menuUiDocument;
+    private UIDocument _uiDocument;
 
     private VisualElement _apiPanel;
 
@@ -24,7 +25,7 @@ public class MenuUiManager : MonoBehaviour
     private Button _apiButton;
     private Button _apiConfirmButton;
     //=================================================================//
-    private void Awake() {
+    private void Start() {
         Init();
     }
     private void OnDestroy() {
@@ -43,11 +44,12 @@ public class MenuUiManager : MonoBehaviour
     }
     //=================================================================//
     private void Init() {
-        if (_menuUiDocument == null) {
+        _uiDocument = AppManager.Instance.UIDocument;
+        if (_uiDocument == null) {
             Debug.LogError("Menu UI Document is not assigned in the inspector.");
             return;
         }
-        var root = _menuUiDocument.rootVisualElement;
+        var root = _uiDocument.rootVisualElement;
         _exchangeRateButton = root.Q<Button>(EXCHANGE_RATE_BUTTON_NAME);
         _quizButton = root.Q<Button>(QUIZ_BUTTON_NAME);
         _wikiButton = root.Q<Button>(WIKI_BUTTON_NAME);
@@ -83,6 +85,7 @@ public class MenuUiManager : MonoBehaviour
     private void OnQuizButtonClicked() {
     }
     private void OnExchangeRateButtonClicked() {
+        OnExchangeRateButtonClickedEvent?.Invoke();
     }
     private void ActivateApiPanel(bool activate) {
         if (_apiPanel != null) {

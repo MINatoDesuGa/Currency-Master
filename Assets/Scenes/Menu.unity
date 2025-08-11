@@ -291,6 +291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c452a3c1b841b06429776f2855f93d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIDocument: {fileID: 468471829}
+  _apiUrl: https://v6.exchangerate-api.com/v6/
 --- !u!4 &787558303
 Transform:
   m_ObjectHideFlags: 0
@@ -350,7 +352,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e67741cd246eae45bb8a90948a487b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _menuUiDocument: {fileID: 468471829}
 --- !u!1 &1408170508
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +363,7 @@ GameObject:
   - component: {fileID: 1408170509}
   - component: {fileID: 1408170510}
   m_Layer: 0
-  m_Name: ExchangeRateManager
+  m_Name: ExchangeRateUiManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

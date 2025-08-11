@@ -1,0 +1,98 @@
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UIElements;
+public class ExchangeRateUIManager : MonoBehaviour
+{
+    private const string EXCHANGE_RATE_PANEL_NAME = "exchangeRatePanel";
+    private const string FROM_CURRENCY_DROPDOWN_NAME = "fromCurrencyDropdown";
+    private const string TO_CURRENCY_DROPDOWN_NAME = "toCurrencyDropdown";
+    private const string AMOUNT_INPUT_NAME = "amountInput";
+    private const string EXCHANGE_RATE_RESULT_LABEL_NAME = "conversionResultTxt";
+    private const string EXCHANGE_RATE_CLOSE_BUTTON_NAME = "exchangeRateCloseBtn";
+
+    private UIDocument _uiDocument;
+    private VisualElement _exchangeRatePanel;
+    private DropdownField _fromCurrencyDropdown;
+    private DropdownField _toCurrencyDropdown;
+    private FloatField _amountInput;
+    private Label _exchangeRateResultLabel;
+    private Button _exchangeRateCloseButton;
+    //==================================================================//
+    private void Awake() {
+        AppManager.OnCurrencyCollectionUpdated += OnCurrencyCollectionUpdated;
+        MenuUiManager.OnExchangeRateButtonClickedEvent += OnExchangeRateButtonClicked;
+        Init();
+    }
+    private void OnDestroy() {
+        AppManager.OnCurrencyCollectionUpdated -= OnCurrencyCollectionUpdated;
+        MenuUiManager.OnExchangeRateButtonClickedEvent -= OnExchangeRateButtonClicked;
+    }
+    //==================================================================//
+    private void Init() {
+        _uiDocument = AppManager.Instance.UIDocument;
+        if (_uiDocument == null) {
+            Debug.LogError("Exchange Rate UI Document is not assigned in the inspector.");
+            return;
+        }
+        var root = _uiDocument.rootVisualElement;
+        _exchangeRatePanel = root.Q<VisualElement>(EXCHANGE_RATE_PANEL_NAME);
+        if (_exchangeRatePanel == null) {
+            Debug.LogError("Exchange Rate Panel is not found in the UI Document.");
+            return;
+        }
+        _fromCurrencyDropdown = _exchangeRatePanel.Q<DropdownField>(FROM_CURRENCY_DROPDOWN_NAME);
+        if (_fromCurrencyDropdown == null) {
+            Debug.LogError("Currency Dropdown is not found in the Exchange Rate Panel.");
+            return;
+        }
+        _toCurrencyDropdown = _exchangeRatePanel.Q<DropdownField>(TO_CURRENCY_DROPDOWN_NAME);
+        if (_toCurrencyDropdown == null) {
+            Debug.LogError("To Currency Dropdown is not found in the Exchange Rate Panel.");
+            return;
+        }
+        _amountInput = _exchangeRatePanel.Q<FloatField>(AMOUNT_INPUT_NAME);
+        if (_amountInput == null) {
+            Debug.LogError("Amount Input Field is not found in the Exchange Rate Panel.");
+            return;
+        }
+        _exchangeRateResultLabel = _exchangeRatePanel.Q<Label>(EXCHANGE_RATE_RESULT_LABEL_NAME);
+        if (_exchangeRateResultLabel == null) {
+            Debug.LogError("Exchange Rate Result Label is not found in the Exchange Rate Panel.");
+            return;
+        }
+        _exchangeRateCloseButton = _exchangeRatePanel.Q<Button>(EXCHANGE_RATE_CLOSE_BUTTON_NAME);
+        if (_exchangeRateCloseButton == null) {
+            Debug.LogError("Exchange Rate Close Button is not found in the Exchange Rate Panel.");
+            return;
+        }
+        _exchangeRateCloseButton.clicked += () => _exchangeRatePanel.style.display = DisplayStyle.None;
+    }
+    private void OnCurrencyCollectionUpdated() {
+        // update dropdownpanel with currency collection data
+        var currencyChoices = AppManager.Instance.CurrencyCollection.Keys.ToList();
+        _fromCurrencyDropdown.choices = currencyChoices;
+        _fromCurrencyDropdown.value = currencyChoices.FirstOrDefault() ?? string.Empty;
+        _fromCurrencyDropdown.RegisterValueChangedCallback(evt => {
+            // Handle currency selection change if needed
+            OnFromCurrencyUpdated(evt.newValue);
+            
+        });
+        _toCurrencyDropdown.choices = currencyChoices;
+        _toCurrencyDropdown.value = currencyChoices.FirstOrDefault() ?? string.Empty;
+        _toCurrencyDropdown.RegisterValueChangedCallback(evt => {
+            // Handle currency selection change if needed
+            OnToCurrencyUpdated(evt.newValue);
+        });
+    }
+    private void OnFromCurrencyUpdated(string currencyCode) {
+        Debug.Log($"Selected from currency: {currencyCode}");
+        //check cache for exchange rate else fetch from API
+    }
+    private void OnToCurrencyUpdated(string currencyCode) {
+        Debug.Log($"Selected to currency: {currencyCode}");
+        //check cache for exchange rate else fetch from API
+    }
+    private void OnExchangeRateButtonClicked() {
+        _exchangeRatePanel.style.display = DisplayStyle.Flex;
+    }
+}
