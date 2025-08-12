@@ -362,8 +362,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1408170509}
   - component: {fileID: 1408170510}
+  - component: {fileID: 1408170511}
   m_Layer: 0
-  m_Name: ExchangeRateUiManager
+  m_Name: ExchangeRateManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,6 +395,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eec95cbdb5547854987ce302bf7dbf70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1408170511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408170508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9bedc1bd6063774084a2baf70f9e0be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2046714140

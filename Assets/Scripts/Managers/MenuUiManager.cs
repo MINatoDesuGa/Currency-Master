@@ -13,6 +13,7 @@ public class MenuUiManager : MonoBehaviour
     private const string API_BUTTON_NAME = "apiBtn";
     private const string API_CONFIRM_BUTTON_NAME = "apiConfirmBtn";
     private const string API_KEY_INPUT_NAME = "apiKeyInput";
+    private const string API_PANEL_CLOSE_BUTTON_NAME = "apiPanelCloseBtn";
 
     private UIDocument _uiDocument;
 
@@ -24,6 +25,7 @@ public class MenuUiManager : MonoBehaviour
     private Button _aboutButton;
     private Button _apiButton;
     private Button _apiConfirmButton;
+    private Button _apiPanelCloseButton;
     //=================================================================//
     private void Start() {
         Init();
@@ -57,6 +59,7 @@ public class MenuUiManager : MonoBehaviour
         _apiButton = root.Q<Button>(API_BUTTON_NAME);
         _apiConfirmButton = root.Q<Button>(API_CONFIRM_BUTTON_NAME);
         _apiPanel = root.Q<VisualElement>(API_PANEL_NAME);
+        _apiPanelCloseButton = _apiPanel.Q<Button>(API_PANEL_CLOSE_BUTTON_NAME);
 
         if (_exchangeRateButton == null || _quizButton == null || _wikiButton == null || _aboutButton == null) {
             Debug.LogError("One or more menu buttons are not found in the UI Document.");
@@ -69,6 +72,7 @@ public class MenuUiManager : MonoBehaviour
         _aboutButton.clicked += OnAboutButtonClicked;
         _apiButton.clicked += OnApiButtonClicked;
         _apiConfirmButton.clicked += OnApiConfirmButtonClicked;
+        _apiPanelCloseButton.clicked += () => ActivateApiPanel(false);
     }
     private void OnApiConfirmButtonClicked() {
         ActivateApiPanel(false);

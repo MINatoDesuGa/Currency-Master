@@ -17,6 +17,7 @@ public class AppManager : MonoBehaviour
     public UIDocument UIDocument;
     private string _currencyCollectionSavePath => Path.Combine(Application.persistentDataPath, "currency_collection.json");
     [SerializeField] private string _apiUrl = "https://v6.api.exchangerate-api.com/v6/";
+    public string ApiUrl { get => _apiUrl; }
     //===================================================================//
     private void Awake() {
         if (Instance == null) {
@@ -40,26 +41,24 @@ public class AppManager : MonoBehaviour
         CheckAndPopulateCurrencyCollection();
     }
     private void CheckAndPopulateCurrencyCollection() {
+        if (PlayerPrefs.HasKey(API_KEY_PREF_KEY)) {
+            ApiKey = PlayerPrefs.GetString(API_KEY_PREF_KEY);
+        }
         // Check if the currency collection file exists
         if (File.Exists(_currencyCollectionSavePath)) {
             CurrencyCollection = JsonConvert.DeserializeObject<CurrencyData>(File.ReadAllText(_currencyCollectionSavePath)).conversion_rates;
             OnCurrencyCollectionUpdated?.Invoke();
             print("Currency collection loaded from file.");
         } else {
-            if(PlayerPrefs.HasKey(API_KEY_PREF_KEY)) {
-                ApiKey = PlayerPrefs.GetString(API_KEY_PREF_KEY);
-                if (!string.IsNullOrEmpty(ApiKey)) {
-                    PopulateCurrencyCollection();
-                } else {
-                    Debug.LogError("API Key is not set. Please set the API Key first.");
-                }
+            if (!string.IsNullOrEmpty(ApiKey)) {
+                PopulateCurrencyCollection();
             } else {
-                Debug.LogError("API Key is not found in PlayerPrefs. Please set the API Key first.");
+                Debug.LogError("API Key is not set. Please set the API Key first.");
             }
         }
     }
     private async Task PopulateCurrencyCollection() {
-        CurrencyData currencyData = await GetJsonDataAsync(_apiUrl + ApiKey + "/latest/USD");
+        CurrencyData currencyData = await GetCurrencyDataAsync(_apiUrl + ApiKey + "/latest/USD");
         if (currencyData != null && currencyData.conversion_rates != null) {
             CurrencyCollection = currencyData.conversion_rates;
             // Save the currency collection to a file
@@ -71,7 +70,7 @@ public class AppManager : MonoBehaviour
             Debug.LogError("Failed to populate currency collection.");
         }
     }
-    private async Task<CurrencyData> GetJsonDataAsync(string url) {
+    private async Task<CurrencyData> GetCurrencyDataAsync(string url) {
         using (UnityWebRequest request = UnityWebRequest.Get(url)) {
             var operation = request.SendWebRequest();
 
